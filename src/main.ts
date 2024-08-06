@@ -1,17 +1,17 @@
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
+// import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 import { NestApplication, NestFactory } from '@nestjs/core'
-import * as fs from 'fs-extra'
-import helmet from 'helmet'
+// import * as fs from 'fs-extra'
+// import helmet from 'helmet'
 import * as cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
-   const PORT = process.env.PORT || 8878
+   const PORT = process.env.PORT || 8879
 
-   const httpsOptions = {
-      key: fs.readFileSync('secret/key.pem'),
-      cert: fs.readFileSync('secret/cert.pem')
-   }
+   // const httpsOptions = {
+   //    key: fs.readFileSync('secret/key.pem'),
+   //    cert: fs.readFileSync('secret/cert.pem')
+   // }
 
    const graphqlUploadExpress = (await import('graphql-upload/graphqlUploadExpress.mjs')).default
 
