@@ -29,7 +29,14 @@ async function bootstrap() {
 
    //  app.enableCors(corsOptions);
 
-   app.enableCors()
+   const corsOptions = {
+      origin: ['https://www.app.navalista.com', 'https://app.navalista.com'],
+      credentials: true,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      allowedHeaders: 'Content-Type, Accept, Authorization'
+   }
+
+   app.enableCors(corsOptions)
    app.use(cookieParser())
 
    await app.listen(PORT).then(() => console.log(`App run on https://localhost:${PORT}`))
