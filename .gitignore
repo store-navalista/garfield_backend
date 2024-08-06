@@ -397,7 +397,7 @@ Temporary Items
 .env
 secret
 dist
-upload
+/upload
 ecosystem.config.js
 .production.env
 .development.env
