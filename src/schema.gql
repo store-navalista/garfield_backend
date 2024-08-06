@@ -1,0 +1,121 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Job {
+  id: Float!
+  ship_name: String
+  job_description: String
+  project_number: String
+  hours_worked: [Float!]
+  report_period: String
+  order: Float!
+  user: User!
+}
+
+type User {
+  id: String!
+  describe_name: String!
+  describe_date: String
+  describe_specialization: String
+  describe_position: String
+  describe_role: String!
+  currentTask: String
+  jobs: [Job!]!
+  describe_password: String!
+  mail: String
+}
+
+type Token {
+  token: String!
+  id: String!
+}
+
+type FileType {
+  id: ID!
+  filename: String!
+  mimetype: String!
+  encoding: String!
+  url: String!
+}
+
+type FileResponse {
+  fileName: String!
+  size: Float!
+  buffer: String!
+}
+
+"""ErrorMessage scalar type"""
+scalar ErrorMessage
+
+"""Buffer custom scalar type"""
+scalar Buffer
+
+type Query {
+  getCTO: User
+  getUser(userId: String!): User
+  getUsers: [User]!
+  getJobsByUserIdAndPeriod(userId: String!, period: String!): [Job]!
+  getJobsByUserId(userId: String!): [Job]!
+  getFile(filePath: String!, fileName: String!): FileResponse
+}
+
+type Mutation {
+  createModerator(createModeratorInput: CreateModeratorInput!): User!
+  createUser(createUserData: CreateUserInput!): User!
+  updateUser(id: String!, updateUserData: UpdateUserInput!): User!
+  deleteUser(id: String!): Boolean
+  updatePassword(id: String!, newPassword: String!): Boolean!
+  updateJobsByUserIdAndPeriod(updateJobsData: UpdateJobsInput!): [Job!]!
+  login(loginDto: LoginInput!): Token
+  uploadFile(file: Upload!): FileType!
+}
+
+input CreateModeratorInput {
+  describe_password: String!
+  describe_role: String
+  mail: String
+}
+
+input CreateUserInput {
+  CTO: Boolean
+  describe_name: String!
+  describe_password: String!
+  describe_date: String
+  describe_specialization: String
+  describe_position: String
+  describe_role: String
+  mail: String
+}
+
+input UpdateUserInput {
+  describe_name: String!
+  describe_date: String
+  describe_specialization: String
+  describe_position: String
+  mail: String
+}
+
+input UpdateJobsInput {
+  userId: String!
+  period: String!
+  jobs: [CreateJobData!]!
+}
+
+input CreateJobData {
+  id: Float
+  job_description: String!
+  project_number: String!
+  ship_name: String!
+  hours_worked: [Float!]!
+  report_period: String!
+  order: Float!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
