@@ -26,8 +26,19 @@ async function bootstrap() {
       allowedHeaders: 'Content-Type, Accept, Authorization'
    }
 
-   app.enableCors(corsOptions)
+   // app.enableCors(corsOptions)
    app.use(cookieParser())
+
+   app.use((req, res, next) => {
+      res.header('Access-Control-Allow-Origin', 'https://www.app.navalista.com, https://app.navalista.com')
+      res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS')
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization')
+      res.header('Access-Control-Allow-Credentials', 'true')
+      if (req.method === 'OPTIONS') {
+         return res.sendStatus(204)
+      }
+      next()
+   })
 
    await app.listen(PORT).then(() => console.log(`App run on https://localhost:${PORT}`))
 }
