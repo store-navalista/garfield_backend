@@ -15,8 +15,8 @@ async function bootstrap() {
 
    const graphqlUploadExpress = (await import('graphql-upload/graphqlUploadExpress.mjs')).default
 
-   // const app = await NestFactory.create(AppModule, { httpsOptions })
-   const app = await NestFactory.create<NestApplication>(AppModule)
+   const app = await NestFactory.create(AppModule, { httpsOptions })
+   // const app = await NestFactory.create<NestApplication>(AppModule)
    app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 10 }))
 
    const corsOptions = {
