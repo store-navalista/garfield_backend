@@ -26,7 +26,7 @@ async function bootstrap() {
       allowedHeaders: 'Content-Type, Accept, Authorization'
    }
 
-   app.enableCors()
+   app.enableCors(corsOptions)
    app.use(cookieParser())
 
    await app.listen(PORT).then(() => console.log(`App run on https://127.0.0.1:${PORT}`))
