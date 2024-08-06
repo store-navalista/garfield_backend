@@ -9,8 +9,8 @@ async function bootstrap() {
    const PORT = process.env.PORT || 8879
 
    const httpsOptions = {
-      key: fs.readFileSync(' /etc/letsencrypt/live/app.navalista.com/privkey.pem'),
-      cert: fs.readFileSync('/etc/letsencrypt/live/app.navalista.com/cert.pem')
+      key: fs.readFileSync('secret/key.pem'),
+      cert: fs.readFileSync('secret/cert.pem')
    }
 
    const graphqlUploadExpress = (await import('graphql-upload/graphqlUploadExpress.mjs')).default
