@@ -36,7 +36,7 @@ export class UserResolver {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Roles('CTO', 'Moderator')
+   @Roles('CTO', 'Moderator', 'Employee')
    @UseGuards(RolesGuard)
    @Query(() => [User], { nullable: 'items' })
    getUsers(): Promise<User[]> {

@@ -8,10 +8,10 @@ import { AppModule } from './app.module'
 async function bootstrap() {
    const PORT = process.env.PORT || 8879
 
-   const httpsOptions = {
-      key: fs.readFileSync('secret/privkey.pem'),
-      cert: fs.readFileSync('secret/cert.pem')
-   }
+   // const httpsOptions = {
+   //    key: fs.readFileSync('secret/privkey.pem'),
+   //    cert: fs.readFileSync('secret/cert.pem')
+   // }
 
    const graphqlUploadExpress = (await import('graphql-upload/graphqlUploadExpress.mjs')).default
 
