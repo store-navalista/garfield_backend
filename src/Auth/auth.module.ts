@@ -3,10 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from 'src/graphql/models/User'
+import { UsersModule } from 'src/Users/users.module'
 import { AuthResolver } from './auth-resolver'
 import { AuthService } from './auth-service'
 import { JwtAuthGuard } from './jwt-auth.guard'
-import { UsersModule } from 'src/Users/users.module'
 
 @Module({
    imports: [

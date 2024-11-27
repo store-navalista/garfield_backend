@@ -36,7 +36,7 @@ export class UsersService {
    @CatchError('Failed to get users')
    async getUsers() {
       const users = await this.usersRepository.find({ relations: ['jobs'] })
-      return users.filter((user) => user.describe_role === 'Employee')
+      return users.filter((user) => ['Employee', 'DeputyCTO'].includes(user.describe_role))
    }
 
    @CatchError('Failed to delete user by ID')

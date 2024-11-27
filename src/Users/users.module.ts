@@ -10,9 +10,20 @@ import { JobResolver } from './JobResolver'
 import { JobService } from './JobService'
 import { UserResolver } from './UserResolver'
 import { UsersService } from './UsersService'
+import { CurrencyService } from './CurrencyService'
+import { CurrencyResolver } from './CurrencyResolver'
 
 @Module({
    imports: [TypeOrmModule.forFeature([User, Job]), forwardRef(() => AuthModule), JwtModule],
-   providers: [UsersService, UserResolver, JobService, JobResolver, ErrorMessageScalar, JwtAuthGuard]
+   providers: [
+      UsersService,
+      UserResolver,
+      JobService,
+      JobResolver,
+      CurrencyService,
+      CurrencyResolver,
+      ErrorMessageScalar,
+      JwtAuthGuard
+   ]
 })
 export class UsersModule {}

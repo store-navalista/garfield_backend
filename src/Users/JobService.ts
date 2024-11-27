@@ -49,6 +49,7 @@ export class JobService {
       newJob.hours_worked = createJobData.hours_worked
       newJob.report_period = createJobData.report_period
       newJob.order = createJobData.order
+      newJob.notes = createJobData.notes
 
       const savedJob = await this.jobRepository.save(newJob)
 

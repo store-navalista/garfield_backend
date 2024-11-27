@@ -4,11 +4,11 @@ import { JwtAuthGuard } from 'src/Auth/jwt-auth.guard'
 import { Roles } from 'src/Auth/roles-auth.decorator'
 import { RolesGuard } from 'src/Auth/roles.guard'
 import { User } from 'src/graphql/models/User'
+import { CreateModeratorInput } from 'src/graphql/utils/CreateModeratorInput'
 import { CreateUserInput } from 'src/graphql/utils/CreateUserInput'
 import { UpdateUserInput } from 'src/graphql/utils/UpdateUserInput'
-import { UsersService } from './UsersService'
-import { CreateModeratorInput } from 'src/graphql/utils/CreateModeratorInput'
 import { LocalhostGuard } from './ip.guard'
+import { UsersService } from './UsersService'
 
 @Resolver(() => User)
 export class UserResolver {
@@ -28,7 +28,7 @@ export class UserResolver {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Roles('Employee', 'CTO', 'Moderator')
+   @Roles('Employee', 'CTO', 'Moderator', 'DeputyCTO')
    @UseGuards(RolesGuard)
    @Query(() => User, { nullable: true })
    getUser(@Args('userId') userId: string): Promise<User | undefined> {
@@ -36,7 +36,7 @@ export class UserResolver {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Roles('CTO', 'Moderator', 'Employee')
+   @Roles('CTO', 'Moderator', 'DeputyCTO', 'Employee')
    @UseGuards(RolesGuard)
    @Query(() => [User], { nullable: 'items' })
    getUsers(): Promise<User[]> {
@@ -45,7 +45,7 @@ export class UserResolver {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Roles('CTO', 'Moderator')
+   @Roles('CTO', 'Moderator', 'DeputyCTO')
    @UseGuards(RolesGuard)
    @Mutation(() => User)
    createUser(@Args('createUserData') createUserData: CreateUserInput) {
@@ -53,7 +53,7 @@ export class UserResolver {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Roles('CTO', 'Moderator')
+   @Roles('CTO', 'Moderator', 'DeputyCTO')
    @UseGuards(RolesGuard)
    @Mutation(() => User)
    updateUser(@Args('id') userId: string, @Args('updateUserData') updateUserData: UpdateUserInput) {
@@ -61,7 +61,7 @@ export class UserResolver {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Roles('CTO', 'Moderator')
+   @Roles('CTO', 'Moderator', 'DeputyCTO')
    @UseGuards(RolesGuard)
    @Mutation(() => Boolean, { nullable: true })
    deleteUser(@Args('id') id: string) {
@@ -69,7 +69,7 @@ export class UserResolver {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Roles('CTO', 'Moderator')
+   @Roles('CTO', 'Moderator', 'DeputyCTO')
    @UseGuards(RolesGuard)
    @Mutation(() => Boolean)
    updatePassword(@Args('id') userId: string, @Args('newPassword') newPassword: string) {

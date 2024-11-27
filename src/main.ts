@@ -1,6 +1,6 @@
 // import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface'
 import { NestApplication, NestFactory } from '@nestjs/core'
-import * as fs from 'fs-extra'
+// import * as fs from 'fs-extra'
 // import helmet from 'helmet'
 import * as cookieParser from 'cookie-parser'
 import { AppModule } from './app.module'
@@ -20,7 +20,6 @@ async function bootstrap() {
    app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 10 }))
 
    const corsOptions = {
-      // origin: ['https://www.app.navalista.com', 'https://app.navalista.com', '127.0.0.1'],
       credentials: true,
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       allowedHeaders: 'Content-Type, Accept, Authorization'

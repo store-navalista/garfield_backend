@@ -30,6 +30,7 @@
       "@nestjs/typeorm": "^10.0.2",
       "@types/graphql-upload": "^16.0.7",
       "apollo-server-express": "^3.13.0",
+      "axios": "^1.7.7",
       "bcryptjs": "^2.4.3",
       "cookie-parser": "^1.4.6",
       "cross-env": "^7.0.3",

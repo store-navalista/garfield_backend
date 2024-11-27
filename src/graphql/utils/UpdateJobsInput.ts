@@ -22,6 +22,9 @@ export class CreateJobData {
 
    @Field()
    order: number
+
+   @Field({ nullable: true })
+   notes: string
 }
 
 @InputType()

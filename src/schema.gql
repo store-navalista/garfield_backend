@@ -10,6 +10,7 @@ type Job {
   hours_worked: [Float!]
   report_period: String
   order: Float!
+  notes: String
   user: User!
 }
 
@@ -31,6 +32,14 @@ type Token {
   id: String!
 }
 
+type CurrencyRate {
+  baseCurrency: String
+  quoteCurrency: String
+  crossRate: String
+  buy: String
+  sell: String
+}
+
 type FileType {
   id: ID!
   filename: String!
@@ -45,6 +54,51 @@ type FileResponse {
   buffer: String!
 }
 
+type BusinessWorkDesign {
+  id: String!
+  work_number: Float!
+  name_of_vessel: String!
+  name_of_work: String!
+  rate_usd_currency: Float!
+  agreement_currency: CurrencyType!
+  name_of_company: String!
+  name_of_company_locale: WorkCompanyType!
+  coef_usd: Float!
+  work_status: String!
+  salary_usd: Float!
+  travelling_expenses_currency: Float!
+  outsourcing_approval_expenses_currency: Float!
+  bakshish_currency: Float!
+  estimated_working_hours: Float!
+  agreement_cost_currency: Float!
+  start_of_work: String!
+  end_of_work: String!
+  contractor: String!
+  invoice_no: String!
+  payment_sum: Float!
+  date_paid: String!
+  actual_working_hours: Float!
+}
+
+"""Supported currencies"""
+enum CurrencyType {
+  USD
+  UAH
+  EUR
+}
+
+"""Company types involved in work"""
+enum WorkCompanyType {
+  EXTERNAL
+  INTERNAL
+}
+
+type Vessel {
+  IMO: Float!
+  name_of_vessel: String!
+  imo_frozen: Boolean!
+}
+
 """ErrorMessage scalar type"""
 scalar ErrorMessage
 
@@ -57,7 +111,60 @@ type Query {
   getUsers: [User]!
   getJobsByUserIdAndPeriod(userId: String!, period: String!): [Job]!
   getJobsByUserId(userId: String!): [Job]!
+  getCurrency(pair: [String!]!): CurrencyRate
   getFile(filePath: String!, fileName: String!): FileResponse
+  getAllBusinessWorkByType(type: String!): [BusinessWorkDesign!]!
+  getAllBusinessWorkAllTypes: [BusinessWork!]!
+  getBusinessWorksNumbers(type: String!): [Float!]!
+  getVessels: [Vessel!]!
+  deleteVessel(IMO: Float!): Boolean
+}
+
+union BusinessWork = BusinessWorkDesign | BusinessWorkEngineering
+
+type BusinessWorkEngineering {
+  id: String!
+  work_number: Float!
+  name_of_vessel: String!
+  name_of_work: String!
+  name_of_company: String!
+  name_of_company_locale: String!
+  agreement_currency: CurrencyType!
+  executor: TypeExecutorEngineering!
+  coef_usd: Float!
+  rate_usd_currency: Float!
+  work_status: String!
+  agreement_cost_currency: Float!
+  agreement_cost_of_work_day_person_currency: Float!
+  extra_day_cost_day_person_currency: Float!
+  day_started: String!
+  day_finished: String!
+  day_extra_days_started: String!
+  day_extra_days_finished: String!
+  travelling_days_currency: Float!
+  accomodation_expenses_currency: Float!
+  b: Float!
+  other_expenses_currency: Float!
+  bakshish_currency: Float!
+  total_cost_currency: Float!
+  total_cost_with_expenses_currency: Float!
+  salary: Float!
+  salary_with_expenses: Float!
+}
+
+"""Types of engineering executors"""
+enum TypeExecutorEngineering {
+  ROK_AJ
+  ROK_OOV
+  OOV_AJ
+  AOV
+  DVC
+  IS
+  SB
+  VSH
+  ROK
+  AJ
+  OOV
 }
 
 type Mutation {
@@ -69,6 +176,13 @@ type Mutation {
   updateJobsByUserIdAndPeriod(updateJobsData: UpdateJobsInput!): [Job!]!
   login(loginDto: LoginInput!): Token
   uploadFile(file: Upload!): FileType!
+  deleteWorkByTypeAndId(type: String!, id: String!): Boolean!
+  createBusinessWork(type: String!): BusinessWork!
+  updateBusinessWork(type: String!, updateBusinessWorkInput: UpdateBusinessWorkInput!): BusinessWork!
+  updateBusinessWorks(type: String!, updateBusinessWorkInput: [UpdateBusinessWorkInput!]!): [BusinessWork!]!
+  getBusinessWorksByParameter(type: String!, parameter: String!, value: String!): [BusinessWork!]
+  createVessel(createVesselData: UpdateVesselInput!): Vessel!
+  updateVessels(updateVesselsData: [UpdateVesselInput!]!): [Vessel!]!
 }
 
 input CreateModeratorInput {
@@ -93,6 +207,7 @@ input UpdateUserInput {
   describe_date: String
   describe_specialization: String
   describe_position: String
+  describe_role: String
   mail: String
 }
 
@@ -110,6 +225,7 @@ input CreateJobData {
   hours_worked: [Float!]!
   report_period: String!
   order: Float!
+  notes: String
 }
 
 input LoginInput {
@@ -119,3 +235,35 @@ input LoginInput {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+input UpdateBusinessWorkInput {
+  id: String
+  work_number: Float
+  name_of_vessel: String
+  name_of_work: String
+  rate_usd_currency: Float
+  agreement_currency: CurrencyType
+  name_of_company: String
+  name_of_company_locale: WorkCompanyType
+  coef_usd: Float
+  work_status: String
+  salary_usd: Float
+  travelling_expenses_currency: Float
+  outsourcing_approval_expenses_currency: Float
+  bakshish_currency: Float
+  estimated_working_hours: Float
+  agreement_cost_currency: Float
+  start_of_work: String
+  end_of_work: String
+  contractor: String
+  invoice_no: String
+  payment_sum: Float
+  date_paid: String
+  actual_working_hours: Float
+}
+
+input UpdateVesselInput {
+  name_of_vessel: String! = ""
+  IMO: Float!
+  imo_frozen: Boolean! = false
+}

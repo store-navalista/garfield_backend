@@ -33,6 +33,10 @@ export class Job {
    @Field()
    order: number
 
+   @Column({ nullable: true })
+   @Field({ nullable: true, defaultValue: '' })
+   notes: string
+
    @ManyToOne(() => User)
    @JoinColumn({ name: 'user_id' })
    @Field(() => User)
