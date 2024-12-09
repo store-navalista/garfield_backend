@@ -27,4 +27,15 @@ export class FilesResolver {
          buffer
       }
    }
+
+   @Mutation(() => Boolean)
+   async backupDB(): Promise<boolean> {
+      try {
+         await this.filesService.backupDB()
+         return true
+      } catch (error) {
+         console.error('Error during backupDB:', error)
+         throw new Error('Database backup failed')
+      }
+   }
 }

@@ -176,6 +176,7 @@ type Mutation {
   updateJobsByUserIdAndPeriod(updateJobsData: UpdateJobsInput!): [Job!]!
   login(loginDto: LoginInput!): Token
   uploadFile(file: Upload!): FileType!
+  backupDB: Boolean!
   deleteWorkByTypeAndId(type: String!, id: String!): Boolean!
   createBusinessWork(type: String!): BusinessWork!
   updateBusinessWork(type: String!, updateBusinessWorkInput: UpdateBusinessWorkInput!): BusinessWork!
