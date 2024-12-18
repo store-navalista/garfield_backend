@@ -1,5 +1,6 @@
 import { CurrencyType, WorkCompanyType } from 'src/graphql/constants/enums'
 import { BusinessWorkDesign } from 'src/graphql/models/BusinessWorkDesign'
+import { BusinessWorkEngineering } from 'src/graphql/models/BusinessWorkEngineering'
 import { v4 as UUID } from 'uuid'
 
 export type WorksTypes = 'design' | 'engineering' | 'supply' | 'utm'
@@ -38,29 +39,24 @@ export const newWork = (type: WorksTypes) => {
 
       engineering: {
          ...base,
+         executor: '--empty--',
          agreement_cost_currency: 0,
-         executer: '',
          agreement_cost_of_work_day_person_currency: 0,
          extra_day_cost_day_person_currency: 0,
          day_started: '',
          day_finished: '',
-         // day_extra_days_started: =>
-         day_extra_days_finished: '',
+         // day_extra_days_started: string
+         // day_extra_days_finished: string
          travelling_days_currency: 0,
          accomodation_expenses_currency: 0,
          other_expenses_currency: 0,
          bakshish_currency: 0,
-         total_cost_currency: 0,
-         total_cost_with_expenses_currency: 0,
          salary: 0,
-         salary_with_expenses: 0,
-         navalista_profit_currency: 0,
-         navalista_profit: '',
          contractor: '',
          invoice_no: '',
          payment_sum: 0,
          date_paid: ''
-      },
+      } as BusinessWorkEngineering,
       supply: {
          ...base,
          executer: '',

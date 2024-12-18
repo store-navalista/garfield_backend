@@ -3,10 +3,10 @@ import { BusinessWorksResolver } from './business_works.resolver'
 import { BusinessWorksService } from './business_works.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { BusinessWorkDesign } from 'src/graphql/models/BusinessWorkDesign'
-// import { BusinessWorkEngineering } from 'src/graphql/models/BusinessWorkEngineering'
+import { BusinessWorkEngineering } from 'src/graphql/models/BusinessWorkEngineering'
 
 @Module({
-   imports: [TypeOrmModule.forFeature([BusinessWorkDesign])],
+   imports: [TypeOrmModule.forFeature([BusinessWorkDesign, BusinessWorkEngineering])],
    providers: [BusinessWorksResolver, BusinessWorksService]
 })
 export class BusinessWorksModule {}

@@ -54,6 +54,35 @@ type FileResponse {
   buffer: String!
 }
 
+type Vessel {
+  IMO: Float!
+  name_of_vessel: String!
+  imo_frozen: Boolean!
+}
+
+"""ErrorMessage scalar type"""
+scalar ErrorMessage
+
+"""Buffer custom scalar type"""
+scalar Buffer
+
+type Query {
+  getCTO: User
+  getUser(userId: String!): User
+  getUsers: [User]!
+  getJobsByUserIdAndPeriod(userId: String!, period: String!): [Job]!
+  getJobsByUserId(userId: String!): [Job]!
+  getCurrency(pair: [String!]!): CurrencyRate
+  getFile(filePath: String!, fileName: String!): FileResponse
+  getAllBusinessWorkByType(type: String!): [BusinessWork!]!
+  getAllBusinessWorkAllTypes: [BusinessWork!]!
+  getBusinessWorksNumbers(type: String!): [Float!]!
+  getVessels: [Vessel!]!
+  deleteVessel(IMO: Float!): Boolean
+}
+
+union BusinessWork = BusinessWorkDesign | BusinessWorkEngineering
+
 type BusinessWorkDesign {
   id: String!
   work_number: Float!
@@ -93,67 +122,37 @@ enum WorkCompanyType {
   INTERNAL
 }
 
-type Vessel {
-  IMO: Float!
-  name_of_vessel: String!
-  imo_frozen: Boolean!
-}
-
-"""ErrorMessage scalar type"""
-scalar ErrorMessage
-
-"""Buffer custom scalar type"""
-scalar Buffer
-
-type Query {
-  getCTO: User
-  getUser(userId: String!): User
-  getUsers: [User]!
-  getJobsByUserIdAndPeriod(userId: String!, period: String!): [Job]!
-  getJobsByUserId(userId: String!): [Job]!
-  getCurrency(pair: [String!]!): CurrencyRate
-  getFile(filePath: String!, fileName: String!): FileResponse
-  getAllBusinessWorkByType(type: String!): [BusinessWorkDesign!]!
-  getAllBusinessWorkAllTypes: [BusinessWork!]!
-  getBusinessWorksNumbers(type: String!): [Float!]!
-  getVessels: [Vessel!]!
-  deleteVessel(IMO: Float!): Boolean
-}
-
-union BusinessWork = BusinessWorkDesign | BusinessWorkEngineering
-
 type BusinessWorkEngineering {
   id: String!
   work_number: Float!
   name_of_vessel: String!
   name_of_work: String!
   name_of_company: String!
-  name_of_company_locale: String!
-  agreement_currency: CurrencyType!
+  name_of_company_locale: WorkCompanyType!
   executor: TypeExecutorEngineering!
-  coef_usd: Float!
+  agreement_currency: CurrencyType!
   rate_usd_currency: Float!
+  coef_usd: Float!
   work_status: String!
   agreement_cost_currency: Float!
   agreement_cost_of_work_day_person_currency: Float!
   extra_day_cost_day_person_currency: Float!
   day_started: String!
   day_finished: String!
-  day_extra_days_started: String!
-  day_extra_days_finished: String!
   travelling_days_currency: Float!
   accomodation_expenses_currency: Float!
-  b: Float!
   other_expenses_currency: Float!
   bakshish_currency: Float!
-  total_cost_currency: Float!
-  total_cost_with_expenses_currency: Float!
   salary: Float!
-  salary_with_expenses: Float!
+  contractor: String!
+  invoice_no: String!
+  payment_sum: Float!
+  date_paid: String!
 }
 
 """Types of engineering executors"""
 enum TypeExecutorEngineering {
+  empty
   ROK_AJ
   ROK_OOV
   OOV_AJ
@@ -261,6 +260,15 @@ input UpdateBusinessWorkInput {
   payment_sum: Float
   date_paid: String
   actual_working_hours: Float
+  executor: TypeExecutorEngineering
+  agreement_cost_of_work_day_person_currency: Float
+  extra_day_cost_day_person_currency: Float
+  day_started: String
+  day_finished: String
+  travelling_days_currency: Float
+  accomodation_expenses_currency: Float
+  other_expenses_currency: Float
+  salary: Float
 }
 
 input UpdateVesselInput {

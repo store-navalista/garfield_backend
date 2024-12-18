@@ -27,17 +27,18 @@ export enum WorkCompanyType {
 }
 
 export enum TypeExecutorEngineering {
-   ROK_AJ = 'ROK // AJ',
-   ROK_OOV = 'ROK // OOV',
-   OOV_AJ = 'OOV // AJ',
-   AOV = 'AOV',
-   DVC = 'DVC',
-   IS = 'IS',
-   SB = 'SB',
-   VSH = 'VSH',
-   ROK = 'ROK',
-   AJ = 'AJ',
-   OOV = 'OOV'
+   'empty' = '--empty--',
+   'ROK_AJ' = 'ROK // AJ',
+   'ROK_OOV' = 'ROK // OOV',
+   'OOV_AJ' = 'OOV // AJ',
+   'AOV' = 'AOV',
+   'DVC' = 'DVC',
+   'IS' = 'IS',
+   'SB' = 'SB',
+   'VSH' = 'VSH',
+   'ROK' = 'ROK',
+   'AJ' = 'AJ',
+   'OOV' = 'OOV'
 }
 
 export enum FilterTypes {

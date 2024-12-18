@@ -1,5 +1,5 @@
 import { Field, Float, InputType, PartialType } from '@nestjs/graphql'
-import { CurrencyType, WorkCompanyType } from '../constants/enums'
+import { CurrencyType, TypeExecutorEngineering, WorkCompanyType } from '../constants/enums'
 
 @InputType()
 class BaseUpdateBusinessWorkInput {
@@ -71,6 +71,41 @@ class BaseUpdateBusinessWorkInput {
 
    @Field(() => Float)
    actual_working_hours: number
+
+   @Field(() => TypeExecutorEngineering)
+   executor: TypeExecutorEngineering
+
+   @Field(() => Float)
+   agreement_cost_of_work_day_person_currency: number
+
+   @Field(() => Float)
+   extra_day_cost_day_person_currency: number
+
+   @Field(() => String)
+   day_started: string
+
+   @Field(() => String)
+   day_finished: string
+
+   // @Column()
+   // @Field(() => String)
+   // day_extra_days_started: string
+
+   // @Column()
+   // @Field(() => String)
+   // day_extra_days_finished: string
+
+   @Field(() => Float)
+   travelling_days_currency: number
+
+   @Field(() => Float)
+   accomodation_expenses_currency: number
+
+   @Field(() => Float)
+   other_expenses_currency: number
+
+   @Field(() => Float)
+   salary: number
 }
 
 @InputType()

@@ -12,7 +12,7 @@ import { BusinessWorksModule } from './BusinessWorks/business_works.module'
 import { VesselsModule } from './Vessels/vessels.module'
 import { Vessel } from './graphql/models/Vessel'
 import { BusinessWorkDesign } from './graphql/models/BusinessWorkDesign'
-// import { BusinessWorkEngineering } from './graphql/models/BusinessWorkEngineering'
+import { BusinessWorkEngineering } from './graphql/models/BusinessWorkEngineering'
 
 @Module({
    imports: [
@@ -28,7 +28,7 @@ import { BusinessWorkDesign } from './graphql/models/BusinessWorkDesign'
          username: 'postgres',
          password: process.env.DATABASE_PASSWORD,
          database: process.env.DATABASE_NAME,
-         entities: [User, Job, Vessel, BusinessWorkDesign],
+         entities: [User, Job, Vessel, BusinessWorkDesign, BusinessWorkEngineering],
          synchronize: true
       }),
       UsersModule,

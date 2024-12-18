@@ -1,12 +1,11 @@
 import { Args, createUnionType, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { UUID } from 'crypto'
 import { WorksTypes } from 'src/common/constants'
+import { FilterTypes } from 'src/graphql/constants/enums'
 import { BusinessWorkDesign } from 'src/graphql/models/BusinessWorkDesign'
 import { BusinessWorkEngineering } from 'src/graphql/models/BusinessWorkEngineering'
-import { BusinessWorksService } from './business_works.service'
-import { UUID } from 'crypto'
 import { UpdateBusinessWorkInput } from 'src/graphql/utils/UpdateBusinessWorkInput'
-import { FilterTypes } from 'src/graphql/constants/enums'
-// import { StringOrNumberScalar } from 'src/common/scalar/StringOrNumber'
+import { BusinessWorksService } from './business_works.service'
 
 export const BusinessWork = createUnionType({
    name: 'BusinessWork',
@@ -26,7 +25,7 @@ export const BusinessWork = createUnionType({
 export class BusinessWorksResolver {
    constructor(private businessWorksService: BusinessWorksService) {}
 
-   @Query(() => [BusinessWorkDesign])
+   @Query(() => [BusinessWork])
    getAllBusinessWorkByType(@Args('type') type: WorksTypes) {
       return this.businessWorksService.getAllBusinessWorkByType(type)
    }
