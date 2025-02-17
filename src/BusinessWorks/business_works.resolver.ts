@@ -6,10 +6,12 @@ import { BusinessWorkDesign } from 'src/graphql/models/BusinessWorkDesign'
 import { BusinessWorkEngineering } from 'src/graphql/models/BusinessWorkEngineering'
 import { UpdateBusinessWorkInput } from 'src/graphql/utils/UpdateBusinessWorkInput'
 import { BusinessWorksService } from './business_works.service'
+import { BusinessWorkUTM } from 'src/graphql/models/BusinessWorkUTM'
+import { BusinessWorkSupply } from 'src/graphql/models/BusinessWorkSupply'
 
 export const BusinessWork = createUnionType({
    name: 'BusinessWork',
-   types: () => [BusinessWorkDesign, BusinessWorkEngineering],
+   types: () => [BusinessWorkDesign, BusinessWorkEngineering, BusinessWorkSupply, BusinessWorkUTM],
    resolveType(value) {
       if (value instanceof BusinessWorkDesign) {
          return BusinessWorkDesign
@@ -17,11 +19,17 @@ export const BusinessWork = createUnionType({
       if (value instanceof BusinessWorkEngineering) {
          return BusinessWorkEngineering
       }
+      if (value instanceof BusinessWorkSupply) {
+         return BusinessWorkSupply
+      }
+      if (value instanceof BusinessWorkUTM) {
+         return BusinessWorkUTM
+      }
       return null
    }
 })
 
-@Resolver(() => BusinessWorkDesign)
+@Resolver(() => BusinessWork)
 export class BusinessWorksResolver {
    constructor(private businessWorksService: BusinessWorksService) {}
 

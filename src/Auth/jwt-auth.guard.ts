@@ -1,13 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { GqlExecutionContext, GqlContextType } from '@nestjs/graphql'
-import { Observable } from 'rxjs'
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
    constructor(private jwtService: JwtService) {}
 
-   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+   async canActivate(context: ExecutionContext): Promise<boolean> {
       const req = this.getRequest(context)
 
       if (!req) {
@@ -15,13 +14,12 @@ export class JwtAuthGuard implements CanActivate {
       }
 
       try {
-         const token = this.extractTokenFromHeader(req.headers.authorization)
+         const token = this.extractTokenFromCookie(req)
          if (!token) {
             throw new UnauthorizedException({ message: 'User is not authorized' })
          }
 
-         const user = this.jwtService.verify(token)
-
+         const user = await this.jwtService.verifyAsync(token)
          req.user = user
 
          return true
@@ -30,17 +28,8 @@ export class JwtAuthGuard implements CanActivate {
       }
    }
 
-   private extractTokenFromHeader(authHeader: string): string | null {
-      if (!authHeader) {
-         return null
-      }
-
-      const parts = authHeader.split(' ')
-      if (parts.length !== 2 || parts[0] !== 'Bearer') {
-         return null
-      }
-
-      return parts[1]
+   private extractTokenFromCookie(req): string | null {
+      return req.cookies?.refresh_token || null
    }
 
    private getRequest(context: ExecutionContext) {

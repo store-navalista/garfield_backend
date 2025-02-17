@@ -6,97 +6,77 @@ import { CatchError } from 'src/common/decorators/ErrorHandling'
 import { FilterTypes } from 'src/graphql/constants/enums'
 import { BusinessWorkDesign } from 'src/graphql/models/BusinessWorkDesign'
 import { BusinessWorkEngineering } from 'src/graphql/models/BusinessWorkEngineering'
+import { BusinessWorkSupply } from 'src/graphql/models/BusinessWorkSupply'
+import { BusinessWorkUTM } from 'src/graphql/models/BusinessWorkUTM'
 import { UpdateBusinessWorkInput } from 'src/graphql/utils/UpdateBusinessWorkInput'
 import { Repository } from 'typeorm'
 
-type AllWorksSeparate = BusinessWorkDesign | BusinessWorkEngineering
-type AllWorksSeparateArray = (BusinessWorkDesign | BusinessWorkEngineering)[]
+type AllWorksSeparate = BusinessWorkDesign | BusinessWorkEngineering | BusinessWorkSupply | BusinessWorkUTM
+type AllWorksSeparateArray = AllWorksSeparate[]
 
 @Injectable()
 export class BusinessWorksService {
+   private repositoryMap: Record<WorksTypes, Repository<AllWorksSeparate>>
+
    constructor(
       @InjectRepository(BusinessWorkDesign)
       private businessWorkDesignRepository: Repository<BusinessWorkDesign>,
+
       @InjectRepository(BusinessWorkEngineering)
-      private businessWorkEngineeringRepository: Repository<BusinessWorkEngineering>
-   ) {}
+      private businessWorkEngineeringRepository: Repository<BusinessWorkEngineering>,
+
+      @InjectRepository(BusinessWorkSupply)
+      private businessWorkSupplyRepository: Repository<BusinessWorkSupply>,
+
+      @InjectRepository(BusinessWorkUTM)
+      private businessWorkUTMRepository: Repository<BusinessWorkUTM>
+   ) {
+      this.repositoryMap = {
+         design: this.businessWorkDesignRepository,
+         engineering: this.businessWorkEngineeringRepository,
+         supply: this.businessWorkSupplyRepository,
+         utm: this.businessWorkUTMRepository
+      } as any
+   }
+
+   private getRepository(type: WorksTypes): Repository<AllWorksSeparate> {
+      const repository = this.repositoryMap[type]
+      if (!repository) {
+         throw new Error('Unsupported work type')
+      }
+      return repository
+   }
 
    @CatchError('Failed to get all types work')
    async getAllBusinessWorkAllTypes(): Promise<AllWorksSeparateArray> {
-      const [design_works, engineering_works] = await Promise.all([
+      const [designWorks, engineeringWorks] = await Promise.all([
          this.businessWorkDesignRepository.find(),
          this.businessWorkEngineeringRepository.find()
       ])
 
-      return [...design_works, ...engineering_works]
+      return [...designWorks, ...engineeringWorks]
    }
 
    @CatchError('Failed to get all work')
    async getAllBusinessWorkByType(type: WorksTypes): Promise<AllWorksSeparateArray> {
-      switch (type) {
-         case 'design': {
-            const design_works = this.businessWorkDesignRepository.find()
-            return design_works
-         }
-         case 'engineering': {
-            const engineering_works = this.businessWorkEngineeringRepository.find()
-            return engineering_works
-         }
-         // case 'supply': {
-         // }
-         // case 'utm': {
-         // }
-         default:
-            throw new Error('Unsupported work type')
-      }
+      return await this.getRepository(type).find()
    }
 
    @CatchError('Failed to delete work')
    async deleteWorkByTypeAndId(type: WorksTypes, id: UUID): Promise<boolean | null> {
-      switch (type) {
-         case 'design': {
-            const work = await this.businessWorkDesignRepository.findOne({ where: { id } })
-            if (!work) return null
-            await this.businessWorkDesignRepository.delete(id)
-            return true
-         }
-         case 'engineering': {
-            const work = await this.businessWorkEngineeringRepository.findOne({ where: { id } })
-            if (!work) return null
-            await this.businessWorkEngineeringRepository.delete(id)
-            return true
-         }
-         // case 'supply': {
-         // }
-         // case 'utm': {
-         // }
-         default:
-            throw new Error('Unsupported work type')
-      }
+      const repository = this.getRepository(type)
+      const work = await repository.findOne({ where: { id } })
+      if (!work) return null
+      await repository.delete(id)
+      return true
    }
 
    @CatchError('Failed to create work')
    async createBusinessWork(type: WorksTypes): Promise<AllWorksSeparate> {
-      const empty_work = newWork(type)
-
-      switch (type) {
-         case 'design': {
-            const newDesignWork = this.businessWorkDesignRepository.create(empty_work)
-            await this.businessWorkDesignRepository.save(newDesignWork)
-            return newDesignWork
-         }
-         case 'engineering': {
-            const newDesignWork = this.businessWorkEngineeringRepository.create(empty_work)
-            await this.businessWorkEngineeringRepository.save(newDesignWork)
-            return newDesignWork
-         }
-         // case 'supply': {
-         // }
-         // case 'utm': {
-         // }
-         default:
-            throw new Error('Unsupported work type')
-      }
+      const repository = this.getRepository(type)
+      const emptyWork = newWork(type)
+      const newWorkEntity = repository.create(emptyWork)
+      return await repository.save(newWorkEntity)
    }
 
    @CatchError('Failed to update work')
@@ -104,146 +84,47 @@ export class BusinessWorksService {
       type: WorksTypes,
       updateBusinessWorkInput: UpdateBusinessWorkInput
    ): Promise<AllWorksSeparate | null> {
-      switch (type) {
-         case 'design': {
-            const existingWork = await this.businessWorkDesignRepository.findOne({
-               where: { id: updateBusinessWorkInput.id }
-            })
-
-            if (!existingWork) {
-               return null
-            }
-
-            const updatedWork = this.businessWorkDesignRepository.merge(existingWork, updateBusinessWorkInput)
-            await this.businessWorkDesignRepository.save(updatedWork)
-
-            return updatedWork
-         }
-         case 'engineering': {
-            const existingWork = await this.businessWorkEngineeringRepository.findOne({
-               where: { id: updateBusinessWorkInput.id }
-            })
-
-            if (!existingWork) {
-               return null
-            }
-
-            const updatedWork = this.businessWorkEngineeringRepository.merge(existingWork, updateBusinessWorkInput)
-            await this.businessWorkEngineeringRepository.save(updatedWork)
-
-            return updatedWork
-         }
-         // case 'supply': {
-         // }
-         // case 'utm': {
-         // }
-         default:
-            throw new Error('Unsupported work type')
-      }
+      const repository = this.getRepository(type)
+      const existingWork = await repository.findOne({ where: { id: updateBusinessWorkInput.id } })
+      if (!existingWork) return null
+      const updatedWork = repository.merge(existingWork, updateBusinessWorkInput)
+      return await repository.save(updatedWork)
    }
 
-   @CatchError('Failed to update work')
+   @CatchError('Failed to update works')
    async updateBusinessWorks(
       type: WorksTypes,
       updateBusinessWorkInput: UpdateBusinessWorkInput[]
-   ): Promise<AllWorksSeparateArray | null> {
+   ): Promise<AllWorksSeparateArray> {
+      const repository = this.getRepository(type)
       const updatedWorks: AllWorksSeparateArray = []
 
-      switch (type) {
-         case 'design': {
-            for (const updateInput of updateBusinessWorkInput) {
-               const existingWork = await this.businessWorkDesignRepository.findOne({
-                  where: { id: updateInput.id }
-               })
-
-               if (!existingWork) {
-                  console.warn(`Work with ID ${updateInput.id} not found for update.`)
-                  continue
-               }
-
-               const updatedWork = this.businessWorkDesignRepository.merge(existingWork, updateInput)
-               await this.businessWorkDesignRepository.save(updatedWork)
-               updatedWorks.push(updatedWork)
-            }
-
-            return updatedWorks
+      for (const input of updateBusinessWorkInput) {
+         const existingWork = await repository.findOne({ where: { id: input.id } })
+         if (!existingWork) {
+            console.warn(`Work with ID ${input.id} not found for update.`)
+            continue
          }
-         case 'engineering': {
-            for (const updateInput of updateBusinessWorkInput) {
-               const existingWork = await this.businessWorkEngineeringRepository.findOne({
-                  where: { id: updateInput.id }
-               })
-
-               if (!existingWork) {
-                  console.warn(`Work with ID ${updateInput.id} not found for update.`)
-                  continue
-               }
-
-               const updatedWork = this.businessWorkEngineeringRepository.merge(existingWork, updateInput)
-               await this.businessWorkEngineeringRepository.save(updatedWork)
-               updatedWorks.push(updatedWork)
-            }
-
-            return updatedWorks
-         }
-         // case 'supply': {
-         // }
-         // case 'utm': {
-         // }
-         default:
-            throw new Error('Unsupported work type')
+         const updatedWork = repository.merge(existingWork, input)
+         updatedWorks.push(await repository.save(updatedWork))
       }
+
+      return updatedWorks
    }
 
    @CatchError('Failed to get works numbers')
-   async getBusinessWorksNumbers(type: WorksTypes): Promise<number[] | null> {
-      switch (type) {
-         case 'design': {
-            const works = await this.businessWorkDesignRepository.find()
-
-            return works.map((w) => w.work_number).filter((n) => n !== 0)
-         }
-         case 'engineering': {
-            const works = await this.businessWorkEngineeringRepository.find()
-
-            return works.map((w) => w.work_number).filter((n) => n !== 0)
-         }
-         // case 'supply': {
-         // }
-         // case 'utm': {
-         // }
-         default:
-            throw new Error('Unsupported work type')
-      }
+   async getBusinessWorksNumbers(type: WorksTypes): Promise<number[]> {
+      const works = await this.getRepository(type).find()
+      return works.map((work) => work.work_number).filter((n) => n !== 0)
    }
 
-   @CatchError('Failed to get works numbers')
+   @CatchError('Failed to get works by parameter')
    async getBusinessWorksByParameter(
       type: WorksTypes,
       parameter: FilterTypes,
       value: string | number
    ): Promise<AllWorksSeparateArray | null> {
-      switch (type) {
-         case 'design': {
-            const works = await this.businessWorkDesignRepository.find({
-               where: { [parameter]: value }
-            })
-
-            return works.length > 0 ? works : null
-         }
-         case 'engineering': {
-            const works = await this.businessWorkEngineeringRepository.find({
-               where: { [parameter]: value }
-            })
-
-            return works.length > 0 ? works : null
-         }
-         // case 'supply': {
-         // }
-         // case 'utm': {
-         // }
-         default:
-            throw new Error('Unsupported work type')
-      }
+      const works = await this.getRepository(type).find({ where: { [parameter]: value } })
+      return works.length > 0 ? works : null
    }
 }

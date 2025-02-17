@@ -1,23 +1,19 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { Column, Entity, Generated, PrimaryGeneratedColumn } from 'typeorm'
 
-@Entity({ name: 'vessels' })
+@Entity({ name: 'executor' })
 @ObjectType()
-export class Vessel {
+export class Executor {
    @PrimaryGeneratedColumn('uuid')
    @Generated('uuid')
    @Field(() => String)
    id: string
 
    @Column({ unique: true })
-   @Field(() => Number)
-   IMO: number
+   @Field(() => String)
+   executor_name: string
 
    @Column()
-   @Field(() => String)
-   name_of_vessel: string
-
-   @Column({ default: false })
-   @Field(() => Boolean, { defaultValue: false })
-   imo_frozen: boolean
+   @Field(() => String, { nullable: true })
+   description: string
 }

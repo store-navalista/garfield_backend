@@ -9,9 +9,16 @@ type Job {
   project_number: String
   hours_worked: [Float!]
   report_period: String
+  name_of_company_locale: WorkCompanyType
   order: Float!
   notes: String
   user: User!
+}
+
+"""Company types involved in work"""
+enum WorkCompanyType {
+  EXTERNAL
+  INTERNAL
 }
 
 type User {
@@ -21,6 +28,7 @@ type User {
   describe_specialization: String
   describe_position: String
   describe_role: String!
+  name_of_company_locale: String!
   currentTask: String
   jobs: [Job!]!
   describe_password: String!
@@ -28,8 +36,8 @@ type User {
 }
 
 type Token {
-  token: String!
-  id: String!
+  access_token: String!
+  refresh_token: String!
 }
 
 type CurrencyRate {
@@ -54,12 +62,6 @@ type FileResponse {
   buffer: String!
 }
 
-type Vessel {
-  IMO: Float!
-  name_of_vessel: String!
-  imo_frozen: Boolean!
-}
-
 """ErrorMessage scalar type"""
 scalar ErrorMessage
 
@@ -73,15 +75,15 @@ type Query {
   getJobsByUserIdAndPeriod(userId: String!, period: String!): [Job]!
   getJobsByUserId(userId: String!): [Job]!
   getCurrency(pair: [String!]!): CurrencyRate
+  checkAuth: User!
   getFile(filePath: String!, fileName: String!): FileResponse
   getAllBusinessWorkByType(type: String!): [BusinessWork!]!
   getAllBusinessWorkAllTypes: [BusinessWork!]!
   getBusinessWorksNumbers(type: String!): [Float!]!
-  getVessels: [Vessel!]!
-  deleteVessel(IMO: Float!): Boolean
+  getParticipantsByType(type: String!): [Participant!]!
 }
 
-union BusinessWork = BusinessWorkDesign | BusinessWorkEngineering
+union BusinessWork = BusinessWorkDesign | BusinessWorkEngineering | BusinessWorkSupply | BusinessWorkUTM
 
 type BusinessWorkDesign {
   id: String!
@@ -116,12 +118,6 @@ enum CurrencyType {
   EUR
 }
 
-"""Company types involved in work"""
-enum WorkCompanyType {
-  EXTERNAL
-  INTERNAL
-}
-
 type BusinessWorkEngineering {
   id: String!
   work_number: Float!
@@ -129,7 +125,7 @@ type BusinessWorkEngineering {
   name_of_work: String!
   name_of_company: String!
   name_of_company_locale: WorkCompanyType!
-  executor: TypeExecutorEngineering!
+  executor: String!
   agreement_currency: CurrencyType!
   rate_usd_currency: Float!
   coef_usd: Float!
@@ -150,20 +146,87 @@ type BusinessWorkEngineering {
   date_paid: String!
 }
 
-"""Types of engineering executors"""
-enum TypeExecutorEngineering {
-  empty
-  ROK_AJ
-  ROK_OOV
-  OOV_AJ
-  AOV
-  DVC
-  IS
-  SB
-  VSH
-  ROK
-  AJ
-  OOV
+type BusinessWorkSupply {
+  id: String!
+  work_number: Float!
+  name_of_vessel: String!
+  name_of_work: String!
+  name_of_company: String!
+  name_of_company_locale: WorkCompanyType!
+  rate_usd_currency: Float!
+  executor: String!
+  agreement_currency: CurrencyType!
+  coef_usd: Float!
+  work_status: String!
+  contract_price_currency: Float!
+  price_for_supplier: Float!
+  margin: Float!
+  expected_expenses: Float!
+  delivery_expenses: Float!
+  expected_commission: Float!
+  date_started: String!
+  advance_payment: Float!
+  invoice_no: String!
+  date_paid: String!
+  final_payment: Float!
+  date_of_delivery: String!
+}
+
+type BusinessWorkUTM {
+  id: String!
+  work_number: Float!
+  name_of_vessel: String!
+  name_of_work: String!
+  name_of_company: String!
+  name_of_company_locale: WorkCompanyType!
+  rate_usd_currency: Float!
+  agreement_currency: CurrencyType!
+  executor: String!
+  coef_usd: Float!
+  work_status: String!
+  agreement_cost_utm_currency: Float!
+  agreement_cost_supervision_currency: Float!
+  utm_extra_day_cost_currency: Float!
+  day_utm_started: String!
+  day_utm_finished: String!
+  day_supervision_started: String!
+  day_supervision_finished: String!
+  day_extra_days_started: String!
+  day_extra_days_finished: String!
+  travelling_expenses_currency: Float!
+  accomodation_expenses_currency: Float!
+  other_expenses_currency: Float!
+  bakshish_currency: Float!
+  supervision_cost_total_currency: Float!
+  extra_days_cost_total_currency: Float!
+  total_cost_with_currency: Float!
+  total_cost_with_expenses_currency: Float!
+  salary: Float!
+  contractor: String!
+  invoice_no: String!
+  payment_sum: Float!
+  date_paid: String!
+}
+
+union Participant = Vessel | Executor | Contractor
+
+type Vessel {
+  id: String!
+  IMO: Float!
+  name_of_vessel: String!
+  imo_frozen: Boolean!
+}
+
+type Executor {
+  id: String!
+  executor_name: String!
+  description: String
+}
+
+type Contractor {
+  id: String!
+  contractor_name: String!
+  description: String
 }
 
 type Mutation {
@@ -173,7 +236,9 @@ type Mutation {
   deleteUser(id: String!): Boolean
   updatePassword(id: String!, newPassword: String!): Boolean!
   updateJobsByUserIdAndPeriod(updateJobsData: UpdateJobsInput!): [Job!]!
+  logout: Boolean!
   login(loginDto: LoginInput!): Token
+  refresh: Token
   uploadFile(file: Upload!): FileType!
   backupDB: Boolean!
   deleteWorkByTypeAndId(type: String!, id: String!): Boolean!
@@ -181,8 +246,9 @@ type Mutation {
   updateBusinessWork(type: String!, updateBusinessWorkInput: UpdateBusinessWorkInput!): BusinessWork!
   updateBusinessWorks(type: String!, updateBusinessWorkInput: [UpdateBusinessWorkInput!]!): [BusinessWork!]!
   getBusinessWorksByParameter(type: String!, parameter: String!, value: String!): [BusinessWork!]
-  createVessel(createVesselData: UpdateVesselInput!): Vessel!
-  updateVessels(updateVesselsData: [UpdateVesselInput!]!): [Vessel!]!
+  deleteParticipant(type: String!, id: String!): Boolean
+  createParticipant(type: String!, createParticipantData: ParticipantData!): Participant!
+  updateParticipants(type: String!, updateParticipantsData: [ParticipantData!]!): Boolean!
 }
 
 input CreateModeratorInput {
@@ -222,6 +288,7 @@ input CreateJobData {
   job_description: String!
   project_number: String!
   ship_name: String!
+  name_of_company_locale: WorkCompanyType
   hours_worked: [Float!]!
   report_period: String!
   order: Float!
@@ -271,8 +338,28 @@ input UpdateBusinessWorkInput {
   salary: Float
 }
 
-input UpdateVesselInput {
-  name_of_vessel: String! = ""
-  IMO: Float!
-  imo_frozen: Boolean! = false
+"""Types of engineering executors"""
+enum TypeExecutorEngineering {
+  empty
+  ROK_AJ
+  ROK_OOV
+  OOV_AJ
+  AOV
+  DVC
+  IS
+  SB
+  VSH
+  ROK
+  AJ
+  OOV
+}
+
+input ParticipantData {
+  id: String
+  name_of_vessel: String
+  IMO: Float
+  imo_frozen: Boolean
+  executor_name: String
+  contractor_name: String
+  description: String
 }

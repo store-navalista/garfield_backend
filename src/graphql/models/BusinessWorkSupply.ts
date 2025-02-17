@@ -2,9 +2,9 @@ import { Field, Float, ObjectType } from '@nestjs/graphql'
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 import { CurrencyType, WorkCompanyType } from '../constants/enums'
 
-@Entity({ name: 'business_works_engineering' })
+@Entity({ name: 'business_works_supply' })
 @ObjectType()
-export class BusinessWorkEngineering {
+export class BusinessWorkSupply {
    @PrimaryGeneratedColumn('uuid')
    @Field(() => String)
    id: string
@@ -29,6 +29,10 @@ export class BusinessWorkEngineering {
    @Field(() => WorkCompanyType)
    name_of_company_locale: WorkCompanyType
 
+   @Column({ type: 'numeric' })
+   @Field(() => Float)
+   rate_usd_currency: number
+
    @Column()
    @Field(() => String)
    executor: string
@@ -36,10 +40,6 @@ export class BusinessWorkEngineering {
    @Column()
    @Field(() => CurrencyType)
    agreement_currency: CurrencyType
-
-   @Column({ type: 'numeric' })
-   @Field(() => Float)
-   rate_usd_currency: number
 
    @Column({ type: 'numeric' })
    @Field(() => Float)
@@ -51,69 +51,53 @@ export class BusinessWorkEngineering {
 
    @Column({ type: 'numeric' })
    @Field(() => Float)
-   agreement_cost_currency: number
+   contract_price_currency: number
 
    @Column({ type: 'numeric' })
    @Field(() => Float)
-   agreement_cost_of_work_day_person_currency: number
+   price_for_supplier: number
 
    @Column({ type: 'numeric' })
    @Field(() => Float)
-   extra_day_cost_day_person_currency: number
+   margin: number
+
+   @Column({ type: 'numeric' })
+   @Field(() => Float)
+   expected_expenses: number
+
+   @Column({ type: 'numeric' })
+   @Field(() => Float)
+   delivery_expenses: number
+
+   @Column({ type: 'numeric' })
+   @Field(() => Float)
+   expected_commission: number
 
    @Column()
    @Field(() => String)
-   day_started: string
-
-   @Column()
-   @Field(() => String)
-   day_finished: string
-
-   // @Column()
-   // @Field(() => String)
-   // day_extra_days_started: string
-
-   // @Column()
-   // @Field(() => String)
-   // day_extra_days_finished: string
+   date_started: string
 
    @Column({ type: 'numeric' })
    @Field(() => Float)
-   travelling_days_currency: number
-
-   @Column({ type: 'numeric' })
-   @Field(() => Float)
-   accomodation_expenses_currency: number
-
-   @Column({ type: 'numeric' })
-   @Field(() => Float)
-   other_expenses_currency: number
-
-   @Column({ type: 'numeric' })
-   @Field(() => Float)
-   bakshish_currency: number
-
-   @Column({ type: 'numeric' })
-   @Field(() => Float)
-   salary: number
-
-   @Column()
-   @Field(() => String)
-   contractor: string
+   advance_payment: number
 
    @Column()
    @Field(() => String)
    invoice_no: string
 
-   @Column({ type: 'numeric' })
-   @Field(() => Float)
-   payment_sum: number
-
    @Column()
    @Field(() => String)
    date_paid: string
 
+   @Column({ type: 'numeric' })
+   @Field(() => Float)
+   final_payment: number
+
+   @Column()
+   @Field(() => String)
+   date_of_delivery: string
+
    static isTypeOf(obj: any) {
-      return obj instanceof BusinessWorkEngineering || 'engineeringSpecificField' in obj
+      return obj instanceof BusinessWorkSupply || 'supplySpecificField' in obj
    }
 }

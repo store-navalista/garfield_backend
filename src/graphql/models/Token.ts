@@ -3,8 +3,8 @@ import { Field, ObjectType } from '@nestjs/graphql'
 @ObjectType()
 export class Token {
    @Field()
-   token: string
+   access_token: string
 
    @Field()
-   id: string
+   refresh_token?: string
 }

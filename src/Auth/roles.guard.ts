@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { GqlExecutionContext, GqlContextType } from '@nestjs/graphql'
-import { Observable } from 'rxjs'
 import { Reflector } from '@nestjs/core'
 import { ROLES_KEY } from './roles-auth.decorator'
 
@@ -19,7 +18,7 @@ export class RolesGuard implements CanActivate {
       private reflector: Reflector
    ) {}
 
-   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+   async canActivate(context: ExecutionContext): Promise<boolean> {
       try {
          const requiredRoles = this.reflector.getAllAndOverride(ROLES_KEY, [context.getHandler(), context.getClass()])
          if (!requiredRoles) return true
@@ -31,12 +30,13 @@ export class RolesGuard implements CanActivate {
          }
 
          try {
-            const token = this.extractTokenFromHeader(req.headers.authorization)
+            const token = this.extractTokenFromCookie(req)
+
             if (!token) {
                throw new UnauthorizedException({ message: 'User is not authorized' })
             }
 
-            const user = this.jwtService.verify(token)
+            const user = await this.jwtService.verifyAsync(token)
             req.user = user
 
             return requiredRoles.includes(user.describe_role)
@@ -45,20 +45,12 @@ export class RolesGuard implements CanActivate {
          }
       } catch (error) {
          console.log(error)
+         throw new UnauthorizedException({ message: 'Access denied' })
       }
    }
 
-   private extractTokenFromHeader(authHeader: string): string | null {
-      if (!authHeader) {
-         return null
-      }
-
-      const parts = authHeader.split(' ')
-      if (parts.length !== 2 || parts[0] !== 'Bearer') {
-         return null
-      }
-
-      return parts[1]
+   private extractTokenFromCookie(req): string | null {
+      return req.cookies?.refresh_token || null
    }
 
    private getRequest(context: ExecutionContext) {

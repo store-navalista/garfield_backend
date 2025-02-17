@@ -30,6 +30,10 @@ export class User {
    @Field()
    describe_role: string
 
+   @Column({ nullable: true })
+   @Field()
+   name_of_company_locale: string
+
    @Column()
    @Field({ nullable: true })
    currentTask?: string

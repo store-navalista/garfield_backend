@@ -1,6 +1,7 @@
 import { Field, Float, ObjectType } from '@nestjs/graphql'
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { User } from './User'
+import { WorkCompanyType } from '../constants/enums'
 
 @Entity({ name: 'job' })
 @ObjectType()
@@ -28,6 +29,10 @@ export class Job {
    @Column()
    @Field({ nullable: true })
    report_period: string
+
+   @Column({ nullable: true })
+   @Field(() => WorkCompanyType, { nullable: true })
+   name_of_company_locale: WorkCompanyType
 
    @Column()
    @Field()

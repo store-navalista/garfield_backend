@@ -18,13 +18,13 @@ import { JwtAuthGuard } from './jwt-auth.guard'
          inject: [ConfigService],
          useFactory: (configService: ConfigService) => ({
             secret: configService.get<string>('JWT_SECRET'),
-            signOptions: { expiresIn: '24h' }
+            signOptions: { expiresIn: '15m' }
          })
       }),
       TypeOrmModule.forFeature([User]),
       forwardRef(() => UsersModule)
    ],
-   exports: [JwtAuthGuard, JwtModule],
-   providers: [AuthResolver, AuthService, JwtAuthGuard]
+   providers: [AuthResolver, AuthService, JwtAuthGuard],
+   exports: [AuthService, JwtAuthGuard, JwtModule]
 })
 export class AuthModule {}
